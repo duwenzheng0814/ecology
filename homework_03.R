@@ -21,16 +21,27 @@ spe[which.max(species),]      #find the scientific name for "Lece"
 #In terms of the fish community composition, which groups of species can you identify? 
 #Which groups of species are related to these groups of sites?
 
-#Q Mode:cluster analysis of species by site
-fish1 <-t(fish)      #transpose the data
-fish.norm <- decostand(fish1, "normalize")
-fish.ch <- vegdist(fish.norm, "euc")       #get the chord distance
-fish.ch.single <- hclust(fish.ch, method = "single")       #single linkage agglomerative clustering
-plot(fish.ch.single, main = "弦距离-单连接")
-fish.ch.complete <- hclust(fish.ch, method = "complete")        #complete linkage agglomerative clustering
-plot(fish.ch.complete, main = "弦距离-完全连接")
-fish.ch.UPGMA <- hclust(fish.ch, method = "average")       #UPGMA clustering
-plot(fish.ch.UPGMA, main = "弦距离-UPGMA")
+#R Mode:cluster analysis of species by site
+fish.t <-t(fish)      #transpose the data
+fish.t.chi <- decostand(fish.t, "chi.square")
+fish.t.D16 <- dist(fish.t.chi)       #get the euclidean distance
+fish.t.chi.single <- hclust(fish.t.D16, method = "single")       #single linkage agglomerative clustering
+fish.t.chi.complete <- hclust(fish.t.D16, method = "complete")        #complete linkage agglomerative clustering
+
+#Q Mode:cluster analysis of environmental variables by site
+env <- doubs$env
+env <- env[-8,] 
+env.norm <- decostand(env, "normalize")
+env.ch <- vegdist(env.norm, "euc")       #get the chord distance
+env.ch.single <- hclust(env.ch, method = "single")       #single linkage agglomerative clustering
+env.ch.complete <- hclust(env.ch, method = "complete")        #complete linkage agglomerative clustering
+
+par(mfrow=c(2,2))
+plot(fish.t.chi.single, main = "欧式距离-单连接")
+plot(env.ch.single, main = "弦距离-单连接")
+plot(fish.t.chi.complete, main = "欧式距离-完全连接")
+plot(env.ch.complete, main = "弦距离-完全连接")
+
 #k-means cluster analysis of site
 fish.de <- vegdist(scale(fish), "euc")
 fish.kmeans <- kmeans(fish.de, centers = 4, nstart = 100)
